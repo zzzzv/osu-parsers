@@ -463,18 +463,18 @@ export abstract class BeatmapHitObjectDecoder {
 
   static convertPathType(type: string): PathType {
     switch (type) {
-      default:
-      case 'C':
-        return PathType.Catmull;
+    default:
+    case 'C':
+      return PathType.Catmull;
 
-      case 'B':
-        return PathType.Bezier;
+    case 'B':
+      return PathType.Bezier;
 
-      case 'L':
-        return PathType.Linear;
+    case 'L':
+      return PathType.Linear;
 
-      case 'P':
-        return PathType.PerfectCurve;
+    case 'P':
+      return PathType.PerfectCurve;
     }
   }
 

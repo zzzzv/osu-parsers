@@ -140,14 +140,14 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
 
   protected _parseSectionData(line: string, storyboard: Storyboard): void {
     switch (this._sectionMap.currentSection) {
-      case Section.General:
-        return StoryboardGeneralDecoder.handleLine(line, storyboard);
+    case Section.General:
+      return StoryboardGeneralDecoder.handleLine(line, storyboard);
 
-      case Section.Events:
-        return StoryboardEventDecoder.handleLine(line, storyboard);
+    case Section.Events:
+      return StoryboardEventDecoder.handleLine(line, storyboard);
 
-      case Section.Variables:
-        return StoryboardVariableDecoder.handleLine(line, this._variables);
+    case Section.Variables:
+      return StoryboardVariableDecoder.handleLine(line, this._variables);
     }
 
     super._parseSectionData(line, storyboard);

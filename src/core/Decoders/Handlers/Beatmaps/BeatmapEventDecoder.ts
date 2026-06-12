@@ -23,34 +23,34 @@ export abstract class BeatmapEventDecoder {
     const eventType = StoryboardEventDecoder.parseEventType(data[0]);
 
     switch (eventType) {
-      case EventType.Background:
-        beatmap.events.backgroundPath = data[2].replace(/"/g, '');
-        break;
+    case EventType.Background:
+      beatmap.events.backgroundPath = data[2].replace(/"/g, '');
+      break;
 
-      case EventType.Break: {
-        const start = Parsing.parseFloat(data[1]) + offset;
-        const end = Math.max(start, Parsing.parseFloat(data[2]) + offset);
+    case EventType.Break: {
+      const start = Parsing.parseFloat(data[1]) + offset;
+      const end = Math.max(start, Parsing.parseFloat(data[2]) + offset);
 
-        const breakEvent = new BeatmapBreakEvent(start, end);
+      const breakEvent = new BeatmapBreakEvent(start, end);
 
-        if (!beatmap.events.breaks) {
-          beatmap.events.breaks = [];
-        }
-
-        beatmap.events.breaks.push(breakEvent);
-        break;
+      if (!beatmap.events.breaks) {
+        beatmap.events.breaks = [];
       }
 
-      case EventType.Video:
-      case EventType.Sample:
-      case EventType.Sprite:
-      case EventType.Animation:
-      case EventType.StoryboardCommand:
-        /**
-         * Storyboard syntax is quite complex and needs to be processed separately. 
-         * We should collect storyboard lines to parse them later.
-         */
-        if (sbLines) sbLines.push(line);
+      beatmap.events.breaks.push(breakEvent);
+      break;
+    }
+
+    case EventType.Video:
+    case EventType.Sample:
+    case EventType.Sprite:
+    case EventType.Animation:
+    case EventType.StoryboardCommand:
+      /**
+       * Storyboard syntax is quite complex and needs to be processed separately. 
+       * We should collect storyboard lines to parse them later.
+       */
+      if (sbLines) sbLines.push(line);
     }
   }
 }

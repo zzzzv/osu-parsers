@@ -60,13 +60,13 @@ export abstract class BeatmapTimingPointDecoder {
 
     if (data.length > 2) {
       switch (data.length) {
-        default:
-        case 8: effects = Parsing.parseInt(data[7]);
-        case 7: timingChange = data[6] === '1';
-        case 6: volume = Parsing.parseInt(data[5]);
-        case 5: customIndex = Parsing.parseInt(data[4]);
-        case 4: sampleSet = SampleSet[Parsing.parseInt(data[3])];
-        case 3: timeSignature = Parsing.parseInt(data[2]);
+      default:
+      case 8: effects = Parsing.parseInt(data[7]);
+      case 7: timingChange = data[6] === '1';
+      case 6: volume = Parsing.parseInt(data[5]);
+      case 5: customIndex = Parsing.parseInt(data[4]);
+      case 4: sampleSet = SampleSet[Parsing.parseInt(data[3])];
+      case 3: timeSignature = Parsing.parseInt(data[2]);
       }
     }
 
@@ -159,9 +159,12 @@ export abstract class BeatmapTimingPointDecoder {
       this.flushPendingPoints();
     }
 
-    timingChange
-      ? this.pendingPoints.unshift(point)
-      : this.pendingPoints.push(point);
+    if (timingChange) {
+      this.pendingPoints.unshift(point);
+    }
+    else {
+      this.pendingPoints.push(point);
+    }
 
     this.pendingTime = time;
   }

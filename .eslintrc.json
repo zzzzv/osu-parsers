@@ -113,7 +113,7 @@
       }
     ],
     "quotes": ["error", "single"],
-    "semi": "off",
+    "semi": ["error", "always"],
     "semi-spacing": ["error", {
       "before": false, 
       "after": true
@@ -142,9 +142,7 @@
       "rules": {
         // This rule is disabled for reverse indexing in enums
         "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-var-requires": "error",
-
-        "@typescript-eslint/semi": ["error", "always"],
+        "@typescript-eslint/no-require-imports": "error",
         "@typescript-eslint/no-shadow": "off",
         "@typescript-eslint/no-unused-vars": "error",
         "@typescript-eslint/no-use-before-define": ["error", {
@@ -155,8 +153,7 @@
         "@typescript-eslint/no-useless-constructor": "error",
         "@typescript-eslint/explicit-module-boundary-types": "error",
         
-        "indent": "off",
-        "@typescript-eslint/indent": ["error", 2]
+        "indent": ["error", 2]
       }
     },
     {
@@ -166,8 +163,8 @@
         "./**/*.mjs"
       ],
       "rules": {
-        "@typescript-eslint/no-var-requires": "off",
-        "@typescript-eslint/semi": "off",
+        "@typescript-eslint/no-require-imports": "off",
+        "@typescript-eslint/no-unused-expressions": "off",
         "@typescript-eslint/no-shadow": "off",
         "@typescript-eslint/no-unused-vars": "off",
         "@typescript-eslint/no-use-before-define": "off",

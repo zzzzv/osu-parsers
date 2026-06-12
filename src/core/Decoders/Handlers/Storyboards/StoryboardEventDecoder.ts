@@ -50,14 +50,14 @@ export abstract class StoryboardEventDecoder {
     }
 
     switch (depth) {
-      // Storyboard element
-      case 0: return this._handleElement(line, storyboard);
+    // Storyboard element
+    case 0: return this._handleElement(line, storyboard);
 
       // Storyboard element compound or command
-      case 1: return this._handleCompoundOrCommand(line);
+    case 1: return this._handleCompoundOrCommand(line);
 
       // Storyboard element compounded command
-      case 2: return this._handleCommand(line);
+    case 2: return this._handleCommand(line);
     }
   }
 
@@ -79,82 +79,82 @@ export abstract class StoryboardEventDecoder {
     }
 
     switch (eventType) {
-      case EventType.Video: {
-        const layer = storyboard.getLayerByType(LayerType.Video);
-        const offset = Parsing.parseInt(data[1]);
-        const path = data[2].replace(/"/g, '');
+    case EventType.Video: {
+      const layer = storyboard.getLayerByType(LayerType.Video);
+      const offset = Parsing.parseInt(data[1]);
+      const path = data[2].replace(/"/g, '');
 
-        layer.elements.push(new StoryboardVideo(path, offset));
+      layer.elements.push(new StoryboardVideo(path, offset));
 
-        return;
+      return;
+    }
+
+    case EventType.Sprite: {
+      const layer = storyboard.getLayerByType(this.parseLayerType(data[1]));
+      const origin = this.parseOrigin(data[2]);
+      const anchor = this.convertOrigin(origin);
+      const path = data[3].replace(/"/g, '');
+      const x = Parsing.parseFloat(data[4], Parsing.MAX_COORDINATE_VALUE);
+      const y = Parsing.parseFloat(data[5], Parsing.MAX_COORDINATE_VALUE);
+
+      this._storyboardSprite = new StoryboardSprite(
+        path,
+        origin,
+        anchor,
+        new Vector2(x, y),
+      );
+
+      layer.elements.push(this._storyboardSprite);
+
+      return;
+    }
+
+    case EventType.Animation: {
+      const layer = storyboard.getLayerByType(this.parseLayerType(data[1]));
+      const origin = this.parseOrigin(data[2]);
+      const anchor = this.convertOrigin(origin);
+      const path = data[3].replace(/"/g, '');
+      const x = Parsing.parseFloat(data[4], Parsing.MAX_COORDINATE_VALUE);
+      const y = Parsing.parseFloat(data[5], Parsing.MAX_COORDINATE_VALUE);
+      const frameCount = Parsing.parseInt(data[6]);
+
+      let frameDelay = Parsing.parseFloat(data[7]);
+
+      if (storyboard.fileFormat < 6) {
+        /**
+         * This is random as hell but taken straight from osu!stable.
+         */
+        frameDelay = Math.round(0.015 * frameDelay) * 1.186 * (1000 / 60);
       }
 
-      case EventType.Sprite: {
-        const layer = storyboard.getLayerByType(this.parseLayerType(data[1]));
-        const origin = this.parseOrigin(data[2]);
-        const anchor = this.convertOrigin(origin);
-        const path = data[3].replace(/"/g, '');
-        const x = Parsing.parseFloat(data[4], Parsing.MAX_COORDINATE_VALUE);
-        const y = Parsing.parseFloat(data[5], Parsing.MAX_COORDINATE_VALUE);
+      const loopType = this.parseLoopType(data[8]);
 
-        this._storyboardSprite = new StoryboardSprite(
-          path,
-          origin,
-          anchor,
-          new Vector2(x, y),
-        );
+      this._storyboardSprite = new StoryboardAnimation(
+        path,
+        origin,
+        anchor,
+        new Vector2(x, y),
+        frameCount,
+        frameDelay,
+        loopType,
+      );
 
-        layer.elements.push(this._storyboardSprite);
+      layer.elements.push(this._storyboardSprite);
 
-        return;
-      }
+      return;
+    }
 
-      case EventType.Animation: {
-        const layer = storyboard.getLayerByType(this.parseLayerType(data[1]));
-        const origin = this.parseOrigin(data[2]);
-        const anchor = this.convertOrigin(origin);
-        const path = data[3].replace(/"/g, '');
-        const x = Parsing.parseFloat(data[4], Parsing.MAX_COORDINATE_VALUE);
-        const y = Parsing.parseFloat(data[5], Parsing.MAX_COORDINATE_VALUE);
-        const frameCount = Parsing.parseInt(data[6]);
+    case EventType.Sample: {
+      const time = Parsing.parseFloat(data[1]);
+      const layer = storyboard.getLayerByType(this.parseLayerType(data[2]));
+      const path = data[3].replace(/"/g, '');
+      const volume = data.length > 4 ? Parsing.parseInt(data[4]) : 100;
 
-        let frameDelay = Parsing.parseFloat(data[7]);
+      const sample = new StoryboardSample(path, time, volume);
 
-        if (storyboard.fileFormat < 6) {
-          /**
-           * This is random as hell but taken straight from osu!stable.
-           */
-          frameDelay = Math.round(0.015 * frameDelay) * 1.186 * (1000 / 60);
-        }
+      layer.elements.push(sample);
 
-        const loopType = this.parseLoopType(data[8]);
-
-        this._storyboardSprite = new StoryboardAnimation(
-          path,
-          origin,
-          anchor,
-          new Vector2(x, y),
-          frameCount,
-          frameDelay,
-          loopType,
-        );
-
-        layer.elements.push(this._storyboardSprite);
-
-        return;
-      }
-
-      case EventType.Sample: {
-        const time = Parsing.parseFloat(data[1]);
-        const layer = storyboard.getLayerByType(this.parseLayerType(data[2]));
-        const path = data[3].replace(/"/g, '');
-        const volume = data.length > 4 ? Parsing.parseInt(data[4]) : 100;
-
-        const sample = new StoryboardSample(path, time, volume);
-
-        layer.elements.push(sample);
-
-      }
+    }
     }
   }
 
@@ -168,27 +168,27 @@ export abstract class StoryboardEventDecoder {
     const compoundType = data[0] as CompoundType;
 
     switch (compoundType) {
-      case CompoundType.Trigger: {
-        this._timelineGroup = this._storyboardSprite?.addTrigger(
-          data[1], // Trigger name.
-          data.length > 2 ? Parsing.parseFloat(data[2]) : -Infinity, // Trigger start time.
-          data.length > 3 ? Parsing.parseFloat(data[3]) : Infinity, // Trigger end time.
-          data.length > 4 ? Parsing.parseInt(data[4]) : 0, // Trigger group number.
-        );
+    case CompoundType.Trigger: {
+      this._timelineGroup = this._storyboardSprite?.addTrigger(
+        data[1], // Trigger name.
+        data.length > 2 ? Parsing.parseFloat(data[2]) : -Infinity, // Trigger start time.
+        data.length > 3 ? Parsing.parseFloat(data[3]) : Infinity, // Trigger end time.
+        data.length > 4 ? Parsing.parseInt(data[4]) : 0, // Trigger group number.
+      );
 
-        return;
-      }
+      return;
+    }
 
-      case CompoundType.Loop: {
-        this._timelineGroup = this._storyboardSprite?.addLoop(
-          Parsing.parseFloat(data[1]), // Loop start time.
-          Math.max(0, Parsing.parseInt(data[2]) - 1), // Loop repeat count.
-        );
+    case CompoundType.Loop: {
+      this._timelineGroup = this._storyboardSprite?.addLoop(
+        Parsing.parseFloat(data[1]), // Loop start time.
+        Math.max(0, Parsing.parseInt(data[2]) - 1), // Loop repeat count.
+      );
 
-        return;
-      }
+      return;
+    }
 
-      default: this._handleCommand(line);
+    default: this._handleCommand(line);
     }
   }
 
@@ -210,119 +210,119 @@ export abstract class StoryboardEventDecoder {
     const endTime = Parsing.parseInt(data[3] || data[2]);
 
     switch (type) {
-      case CommandType.Fade: {
-        const startValue = Parsing.parseFloat(data[4]);
-        const endValue = data.length > 5 ? Parsing.parseFloat(data[5]) : startValue;
+    case CommandType.Fade: {
+      const startValue = Parsing.parseFloat(data[4]);
+      const endValue = data.length > 5 ? Parsing.parseFloat(data[5]) : startValue;
 
-        this._timelineGroup?.alpha.add(type, easing, startTime, endTime, startValue, endValue);
+      this._timelineGroup?.alpha.add(type, easing, startTime, endTime, startValue, endValue);
 
-        return;
-      }
+      return;
+    }
 
-      case CommandType.Scale: {
-        const startValue = Parsing.parseFloat(data[4]);
-        const endValue = data.length > 5 ? Parsing.parseFloat(data[5]) : startValue;
+    case CommandType.Scale: {
+      const startValue = Parsing.parseFloat(data[4]);
+      const endValue = data.length > 5 ? Parsing.parseFloat(data[5]) : startValue;
 
-        this._timelineGroup?.scale.add(type, easing, startTime, endTime, startValue, endValue);
+      this._timelineGroup?.scale.add(type, easing, startTime, endTime, startValue, endValue);
 
-        return;
-      }
+      return;
+    }
 
-      case CommandType.VectorScale: {
-        const startX = Parsing.parseFloat(data[4]);
-        const startY = Parsing.parseFloat(data[5]);
-        const endX = data.length > 6 ? Parsing.parseFloat(data[6]) : startX;
-        const endY = data.length > 7 ? Parsing.parseFloat(data[7]) : startY;
+    case CommandType.VectorScale: {
+      const startX = Parsing.parseFloat(data[4]);
+      const startY = Parsing.parseFloat(data[5]);
+      const endX = data.length > 6 ? Parsing.parseFloat(data[6]) : startX;
+      const endY = data.length > 7 ? Parsing.parseFloat(data[7]) : startY;
 
-        this._timelineGroup?.vectorScale.add(
-          type,
-          easing,
-          startTime,
-          endTime,
-          new Vector2(startX, startY),
-          new Vector2(endX, endY),
-        );
+      this._timelineGroup?.vectorScale.add(
+        type,
+        easing,
+        startTime,
+        endTime,
+        new Vector2(startX, startY),
+        new Vector2(endX, endY),
+      );
 
-        return;
-      }
+      return;
+    }
 
-      case CommandType.Rotation: {
-        const startValue = Parsing.parseFloat(data[4]);
-        const endValue = data.length > 5 ? Parsing.parseFloat(data[5]) : startValue;
+    case CommandType.Rotation: {
+      const startValue = Parsing.parseFloat(data[4]);
+      const endValue = data.length > 5 ? Parsing.parseFloat(data[5]) : startValue;
 
-        this._timelineGroup?.rotation.add(
-          type,
-          easing,
-          startTime,
-          endTime,
-          startValue,
-          endValue,
-        );
+      this._timelineGroup?.rotation.add(
+        type,
+        easing,
+        startTime,
+        endTime,
+        startValue,
+        endValue,
+      );
 
-        return;
-      }
+      return;
+    }
 
-      case CommandType.Movement: {
-        const startX = Parsing.parseFloat(data[4]);
-        const startY = Parsing.parseFloat(data[5]);
-        const endX = data.length > 6 ? Parsing.parseFloat(data[6]) : startX;
-        const endY = data.length > 7 ? Parsing.parseFloat(data[7]) : startY;
+    case CommandType.Movement: {
+      const startX = Parsing.parseFloat(data[4]);
+      const startY = Parsing.parseFloat(data[5]);
+      const endX = data.length > 6 ? Parsing.parseFloat(data[6]) : startX;
+      const endY = data.length > 7 ? Parsing.parseFloat(data[7]) : startY;
 
-        /**
-         * Force MovementX and MovementY types for compatibility with old command format.
-         */
-        this._timelineGroup?.x
-          .add(CommandType.MovementX, easing, startTime, endTime, startX, endX);
+      /**
+       * Force MovementX and MovementY types for compatibility with old command format.
+       */
+      this._timelineGroup?.x
+        .add(CommandType.MovementX, easing, startTime, endTime, startX, endX);
 
-        this._timelineGroup?.y
-          .add(CommandType.MovementY, easing, startTime, endTime, startY, endY);
+      this._timelineGroup?.y
+        .add(CommandType.MovementY, easing, startTime, endTime, startY, endY);
 
-        return;
-      }
+      return;
+    }
 
-      case CommandType.MovementX: {
-        const startValue = Parsing.parseFloat(data[4]);
-        const endValue = data.length > 5 ? Parsing.parseFloat(data[5]) : startValue;
+    case CommandType.MovementX: {
+      const startValue = Parsing.parseFloat(data[4]);
+      const endValue = data.length > 5 ? Parsing.parseFloat(data[5]) : startValue;
 
-        this._timelineGroup?.x
-          .add(type, easing, startTime, endTime, startValue, endValue);
+      this._timelineGroup?.x
+        .add(type, easing, startTime, endTime, startValue, endValue);
 
-        return;
-      }
+      return;
+    }
 
-      case CommandType.MovementY: {
-        const startValue = Parsing.parseFloat(data[4]);
-        const endValue = data.length > 5 ? Parsing.parseFloat(data[5]) : startValue;
+    case CommandType.MovementY: {
+      const startValue = Parsing.parseFloat(data[4]);
+      const endValue = data.length > 5 ? Parsing.parseFloat(data[5]) : startValue;
 
-        this._timelineGroup?.y
-          .add(type, easing, startTime, endTime, startValue, endValue);
+      this._timelineGroup?.y
+        .add(type, easing, startTime, endTime, startValue, endValue);
 
-        return;
-      }
+      return;
+    }
 
-      case CommandType.Color: {
-        const startRed = Parsing.parseFloat(data[4]);
-        const startGreen = Parsing.parseFloat(data[5]);
-        const startBlue = Parsing.parseFloat(data[6]);
-        const endRed = data.length > 7 ? Parsing.parseFloat(data[7]) : startRed;
-        const endGreen = data.length > 8 ? Parsing.parseFloat(data[8]) : startGreen;
-        const endBlue = data.length > 9 ? Parsing.parseFloat(data[9]) : startBlue;
+    case CommandType.Color: {
+      const startRed = Parsing.parseFloat(data[4]);
+      const startGreen = Parsing.parseFloat(data[5]);
+      const startBlue = Parsing.parseFloat(data[6]);
+      const endRed = data.length > 7 ? Parsing.parseFloat(data[7]) : startRed;
+      const endGreen = data.length > 8 ? Parsing.parseFloat(data[8]) : startGreen;
+      const endBlue = data.length > 9 ? Parsing.parseFloat(data[9]) : startBlue;
 
-        this._timelineGroup?.color.add(
-          type,
-          easing,
-          startTime,
-          endTime,
-          new Color4(startRed, startGreen, startBlue, 1),
-          new Color4(endRed, endGreen, endBlue, 1),
-        );
+      this._timelineGroup?.color.add(
+        type,
+        easing,
+        startTime,
+        endTime,
+        new Color4(startRed, startGreen, startBlue, 1),
+        new Color4(endRed, endGreen, endBlue, 1),
+      );
 
-        return;
-      }
+      return;
+    }
 
-      case CommandType.Parameter: {
-        return this._handleParameterCommand(data);
-      }
+    case CommandType.Parameter: {
+      return this._handleParameterCommand(data);
+    }
     }
 
     throw new Error(`Unknown command type: ${type}`);
@@ -341,30 +341,30 @@ export abstract class StoryboardEventDecoder {
     const parameter = data[4] as ParameterType;
 
     switch (parameter) {
-      case ParameterType.BlendingMode: {
-        const startValue = BlendingParameters.Additive;
-        const endValue = startTime === endTime
-          ? BlendingParameters.Additive
-          : BlendingParameters.Inherit;
+    case ParameterType.BlendingMode: {
+      const startValue = BlendingParameters.Additive;
+      const endValue = startTime === endTime
+        ? BlendingParameters.Additive
+        : BlendingParameters.Inherit;
 
-        this._timelineGroup?.blendingParameters
-          .add(type, easing, startTime, endTime, startValue, endValue, parameter);
+      this._timelineGroup?.blendingParameters
+        .add(type, easing, startTime, endTime, startValue, endValue, parameter);
 
-        return;
-      }
+      return;
+    }
 
-      case ParameterType.HorizontalFlip:
-        this._timelineGroup?.flipH
-          .add(type, easing, startTime, endTime, true, startTime === endTime, parameter);
+    case ParameterType.HorizontalFlip:
+      this._timelineGroup?.flipH
+        .add(type, easing, startTime, endTime, true, startTime === endTime, parameter);
 
-        return;
+      return;
 
-      case ParameterType.VerticalFlip: {
-        this._timelineGroup?.flipV
-          .add(type, easing, startTime, endTime, true, startTime === endTime, parameter);
+    case ParameterType.VerticalFlip: {
+      this._timelineGroup?.flipV
+        .add(type, easing, startTime, endTime, true, startTime === endTime, parameter);
 
-        return;
-      }
+      return;
+    }
     }
 
     throw new Error(`Unknown parameter type: ${parameter}`);
@@ -403,15 +403,15 @@ export abstract class StoryboardEventDecoder {
 
   static convertOrigin(origin: Origins): Anchor {
     switch (origin) {
-      case Origins.TopLeft: return Anchor.TopLeft;
-      case Origins.TopCentre: return Anchor.TopCentre;
-      case Origins.TopRight: return Anchor.TopRight;
-      case Origins.CentreLeft: return Anchor.CentreLeft;
-      case Origins.Centre: return Anchor.Centre;
-      case Origins.CentreRight: return Anchor.CentreRight;
-      case Origins.BottomLeft: return Anchor.BottomLeft;
-      case Origins.BottomCentre: return Anchor.BottomCentre;
-      case Origins.BottomRight: return Anchor.BottomRight;
+    case Origins.TopLeft: return Anchor.TopLeft;
+    case Origins.TopCentre: return Anchor.TopCentre;
+    case Origins.TopRight: return Anchor.TopRight;
+    case Origins.CentreLeft: return Anchor.CentreLeft;
+    case Origins.Centre: return Anchor.Centre;
+    case Origins.CentreRight: return Anchor.CentreRight;
+    case Origins.BottomLeft: return Anchor.BottomLeft;
+    case Origins.BottomCentre: return Anchor.BottomCentre;
+    case Origins.BottomRight: return Anchor.BottomRight;
     }
 
     return Anchor.TopLeft;

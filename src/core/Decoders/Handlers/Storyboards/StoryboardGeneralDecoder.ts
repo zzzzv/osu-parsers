@@ -14,8 +14,8 @@ export abstract class StoryboardGeneralDecoder {
     const value = values.join(' ');
 
     switch (key) {
-      case 'UseSkinSprites':
-        storyboard.useSkinSprites = value === '1';
+    case 'UseSkinSprites':
+      storyboard.useSkinSprites = value === '1';
     }
   }
 }

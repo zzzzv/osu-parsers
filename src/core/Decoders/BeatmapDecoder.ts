@@ -151,26 +151,26 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
 
   protected _parseSectionData(line: string, beatmap: Beatmap): void {
     switch (this._sectionMap.currentSection) {
-      case Section.General:
-        return BeatmapGeneralDecoder.handleLine(line, beatmap, this._offset);
+    case Section.General:
+      return BeatmapGeneralDecoder.handleLine(line, beatmap, this._offset);
 
-      case Section.Editor:
-        return BeatmapEditorDecoder.handleLine(line, beatmap);
+    case Section.Editor:
+      return BeatmapEditorDecoder.handleLine(line, beatmap);
 
-      case Section.Metadata:
-        return BeatmapMetadataDecoder.handleLine(line, beatmap);
+    case Section.Metadata:
+      return BeatmapMetadataDecoder.handleLine(line, beatmap);
 
-      case Section.Difficulty:
-        return BeatmapDifficultyDecoder.handleLine(line, beatmap);
+    case Section.Difficulty:
+      return BeatmapDifficultyDecoder.handleLine(line, beatmap);
 
-      case Section.Events:
-        return BeatmapEventDecoder.handleLine(line, beatmap, this._sbLines, this._offset);
+    case Section.Events:
+      return BeatmapEventDecoder.handleLine(line, beatmap, this._sbLines, this._offset);
 
-      case Section.TimingPoints:
-        return BeatmapTimingPointDecoder.handleLine(line, beatmap, this._offset);
+    case Section.TimingPoints:
+      return BeatmapTimingPointDecoder.handleLine(line, beatmap, this._offset);
 
-      case Section.HitObjects:
-        return BeatmapHitObjectDecoder.handleLine(line, beatmap, this._offset);
+    case Section.HitObjects:
+      return BeatmapHitObjectDecoder.handleLine(line, beatmap, this._offset);
     }
 
     super._parseSectionData(line, beatmap);

@@ -15,28 +15,28 @@ export abstract class BeatmapDifficultyDecoder {
     const value = values.join(':').trim();
 
     switch (key.trim()) {
-      case 'CircleSize':
-        beatmap.difficulty.circleSize = Parsing.parseFloat(value);
-        break;
+    case 'CircleSize':
+      beatmap.difficulty.circleSize = Parsing.parseFloat(value);
+      break;
 
-      case 'HPDrainRate':
-        beatmap.difficulty.drainRate = Parsing.parseFloat(value);
-        break;
+    case 'HPDrainRate':
+      beatmap.difficulty.drainRate = Parsing.parseFloat(value);
+      break;
 
-      case 'OverallDifficulty':
-        beatmap.difficulty.overallDifficulty = Parsing.parseFloat(value);
-        break;
+    case 'OverallDifficulty':
+      beatmap.difficulty.overallDifficulty = Parsing.parseFloat(value);
+      break;
 
-      case 'ApproachRate':
-        beatmap.difficulty.approachRate = Parsing.parseFloat(value);
-        break;
+    case 'ApproachRate':
+      beatmap.difficulty.approachRate = Parsing.parseFloat(value);
+      break;
 
-      case 'SliderMultiplier':
-        beatmap.difficulty.sliderMultiplier = Parsing.parseFloat(value);
-        break;
+    case 'SliderMultiplier':
+      beatmap.difficulty.sliderMultiplier = Parsing.parseFloat(value);
+      break;
 
-      case 'SliderTickRate':
-        beatmap.difficulty.sliderTickRate = Parsing.parseFloat(value);
+    case 'SliderTickRate':
+      beatmap.difficulty.sliderTickRate = Parsing.parseFloat(value);
     }
   }
 }

@@ -15,24 +15,24 @@ export abstract class BeatmapEditorDecoder {
     const value = values.join(':').trim();
 
     switch (key.trim()) {
-      case 'Bookmarks':
-        beatmap.editor.bookmarks = value.split(',').map((v) => +v);
-        break;
+    case 'Bookmarks':
+      beatmap.editor.bookmarks = value.split(',').map((v) => +v);
+      break;
 
-      case 'DistanceSpacing':
-        beatmap.editor.distanceSpacing = Math.max(0, Parsing.parseFloat(value));
-        break;
+    case 'DistanceSpacing':
+      beatmap.editor.distanceSpacing = Math.max(0, Parsing.parseFloat(value));
+      break;
 
-      case 'BeatDivisor':
-        beatmap.editor.beatDivisor = Parsing.parseInt(value);
-        break;
+    case 'BeatDivisor':
+      beatmap.editor.beatDivisor = Parsing.parseInt(value);
+      break;
 
-      case 'GridSize':
-        beatmap.editor.gridSize = Parsing.parseInt(value);
-        break;
+    case 'GridSize':
+      beatmap.editor.gridSize = Parsing.parseInt(value);
+      break;
 
-      case 'TimelineZoom':
-        beatmap.editor.timelineZoom = Math.max(0, Parsing.parseFloat(value));
+    case 'TimelineZoom':
+      beatmap.editor.timelineZoom = Math.max(0, Parsing.parseFloat(value));
     }
   }
 }

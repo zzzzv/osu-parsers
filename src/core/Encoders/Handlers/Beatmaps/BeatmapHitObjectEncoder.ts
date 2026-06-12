@@ -6,7 +6,6 @@ import {
   HitSound,
   HitType,
   SampleSet,
-  HitSample,
   Vector2,
   IHasPosition,
   PathType,
@@ -28,7 +27,6 @@ export abstract class BeatmapHitObjectEncoder {
 
     const encoded: string[] = ['[HitObjects]'];
 
-    const difficulty = beatmap.difficulty;
     const hitObjects = beatmap.hitObjects;
 
     hitObjects.forEach((hitObject) => {
@@ -102,8 +100,8 @@ export abstract class BeatmapHitObjectEncoder {
 
       const generalLine = general.join(',');
 
-      const extrasLine = hitObject.hitType & HitType.Hold 
-        ? extras.join(':') 
+      const extrasLine = hitObject.hitType & HitType.Hold
+        ? extras.join(':')
         : extras.join(',');
 
       encoded.push([generalLine, extrasLine].join(','));

@@ -15,44 +15,44 @@ export abstract class BeatmapMetadataDecoder {
     const value = values.join(':').trim();
 
     switch (key.trim()) {
-      case 'Title':
-        beatmap.metadata.title = value;
-        break;
+    case 'Title':
+      beatmap.metadata.title = value;
+      break;
 
-      case 'TitleUnicode':
-        beatmap.metadata.titleUnicode = value;
-        break;
+    case 'TitleUnicode':
+      beatmap.metadata.titleUnicode = value;
+      break;
 
-      case 'Artist':
-        beatmap.metadata.artist = value;
-        break;
+    case 'Artist':
+      beatmap.metadata.artist = value;
+      break;
 
-      case 'ArtistUnicode':
-        beatmap.metadata.artistUnicode = value;
-        break;
+    case 'ArtistUnicode':
+      beatmap.metadata.artistUnicode = value;
+      break;
 
-      case 'Creator':
-        beatmap.metadata.creator = value;
-        break;
+    case 'Creator':
+      beatmap.metadata.creator = value;
+      break;
 
-      case 'Version':
-        beatmap.metadata.version = value;
-        break;
+    case 'Version':
+      beatmap.metadata.version = value;
+      break;
 
-      case 'Source':
-        beatmap.metadata.source = value;
-        break;
+    case 'Source':
+      beatmap.metadata.source = value;
+      break;
 
-      case 'Tags':
-        beatmap.metadata.tags = value.split(' ');
-        break;
+    case 'Tags':
+      beatmap.metadata.tags = value.split(' ');
+      break;
 
-      case 'BeatmapID':
-        beatmap.metadata.beatmapId = Parsing.parseInt(value);
-        break;
+    case 'BeatmapID':
+      beatmap.metadata.beatmapId = Parsing.parseInt(value);
+      break;
 
-      case 'BeatmapSetID':
-        beatmap.metadata.beatmapSetId = Parsing.parseInt(value);
+    case 'BeatmapSetID':
+      beatmap.metadata.beatmapSetId = Parsing.parseInt(value);
     }
   }
 }

@@ -39,11 +39,16 @@ function getLZMAInstance(): LZMAInstance {
     decompress(data: CompressedData) {
       return new Promise((res, rej) => {
         decompress(data, (result, err) => {
-          err ? rej(err) : res(
-            typeof result === 'string'
-              ? result
-              : new Uint8Array(result).toString(),
-          );
+          if (err) {
+            rej(err);
+          }
+          else {
+            res(
+              typeof result === 'string'
+                ? result
+                : new Uint8Array(result).toString(),
+            );
+          }
         });
       });
     },
@@ -51,7 +56,12 @@ function getLZMAInstance(): LZMAInstance {
     compress(data: DecompressedData) {
       return new Promise((res, rej) => {
         compress(data, 1, (result, err) => {
-          err ? rej(err) : res(new Uint8Array(result));
+          if (err) {
+            rej(err);
+          }
+          else {
+            res(new Uint8Array(result));
+          }
         });
       });
     },
